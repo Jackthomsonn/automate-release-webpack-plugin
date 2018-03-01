@@ -1,27 +1,33 @@
-const pkg = require('./package.json')
 const fs = require('fs')
 const exec = require('child_process').exec
 
+let pkg
+
+let package
+
 const AutomateRelease = function(options) {
+  pkg = options.path
+
+  package = require(pkg)
 }
 
 const handleMajor = function() {
-  let major = pkg.version.split('.')[0]
-  let version = pkg.version
+  let major = package.version.split('.')[0]
+  let version = package.version
 
   return version.substr(0, 0) + (Number(major) + 1) + '.' + '0.0'
 }
 
 const handleMinor = function() {
-  let minor = pkg.version.split('.')[1]
-  let version = pkg.version
+  let minor = package.version.split('.')[1]
+  let version = package.version
 
   return version.substr(0, 2) + (Number(minor) + 1) + '.' + version.substr(3 + 1)
 }
 
 const handlePatch = function() {
-  let patch = pkg.version.split('.')[2]
-  let version = pkg.version
+  let patch = package.version.split('.')[2]
+  let version = package.version
 
   return version.substr(0, 4) + (Number(patch) + 1) + version.substr(5 + 1)
 }
@@ -41,26 +47,28 @@ const determineVersion = function(type) {
 }
 
 const prepareRelease = function(version) {
-  exec('sh prepare-release.sh ' + version, function (err, stdout, stderr) {
+  exec('sh ' + __dirname + '/prepare-release.sh', function (err, stdout, stderr) {
     if (err != null) {
-      return
+      console.log(err)
     } else if (typeof (stderr) != "string") {
-      console.log(stderr)
+      console.log('stderr: ', stderr)
     } else {
-      console.log(stdout)
+      console.log('stdout', stdout)
     }
   })
 }
 
 AutomateRelease.prototype.apply = function(compiler) {
-  compiler.plugin('emit', function(params) {
+  compiler.plugin('compile', function(params) {
     const args = process.argv.pop()
     const semverType = args
     const version = determineVersion(semverType)
 
-    pkg.version = version
+    package.version = version
 
-    fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2), function(err) {
+    console.log(package.version)
+
+    fs.writeFileSync(pkg, JSON.stringify(package, null, 2), function(err) {
       if (err) {
         console.log(err)
       }
