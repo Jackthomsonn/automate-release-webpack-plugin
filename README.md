@@ -1,5 +1,5 @@
 # automate-release-webpack-plugin
-A webpack plugin which bumps your version number up and automates a release with Git, creating a tag and pushing up your commited code
+A webpack plugin which bumps your version number up in your package.json file and automates a release with Git, creating a tag and pushing up your commited code
 
 # How to use
 
