@@ -1,0 +1,18 @@
+{
+  "name": "automate-release-webpack-plugin",
+  "version": "0.0.1",
+  "description": "A webpack plugin which bumps your version number up and automates a release with Git, creating a tag and pushing up your commited code",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jackthomsonn/automate-release-webpack-plugin.git"
+  },
+  "keywords": [
+    "webpack",
+    "plugin",
+    "automate",
+    "release"
+  ],
+  "author": "Jack Thomson",
+  "license": "MIT"
+}
