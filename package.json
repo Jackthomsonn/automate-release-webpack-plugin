@@ -1,6 +1,6 @@
 {
   "name": "automate-release-webpack-plugin",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A webpack plugin which bumps your version number up and automates a release with Git, creating a tag and pushing up your commited code",
   "main": "index.js",
   "repository": {

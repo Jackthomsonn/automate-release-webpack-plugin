@@ -1,5 +1,6 @@
 const fs = require('fs')
 const exec = require('child_process').exec
+const path = require('path')
 
 let pkg
 
@@ -8,7 +9,7 @@ let package
 const AutomateRelease = function(options) {
   pkg = options.path
 
-  package = require(pkg)
+  package = require(path.resolve('./', pkg))
 }
 
 const handleMajor = function() {
