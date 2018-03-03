@@ -1,15 +1,13 @@
 const fs = require('fs')
 const exec = require('child_process').exec
 const path = require('path')
+const package = require(path.resolve('./', 'package.json'))
 
-let pkg
+const AutomateRelease = function() {
+}
 
-let package
-
-const AutomateRelease = function(options) {
-  pkg = options.path
-
-  package = require(path.resolve('./', pkg))
+const getShellScriptPath = function() {
+  return __dirname.replace(/ /g, '\\ ') + '/prepare-release.sh'
 }
 
 const handleMajor = function() {
@@ -48,13 +46,9 @@ const determineVersion = function(type) {
 }
 
 const prepareRelease = function(version) {
-  exec('sh ' + __dirname + '/prepare-release.sh', function (err, stdout, stderr) {
-    if (err != null) {
-      console.log(err)
-    } else if (typeof (stderr) != "string") {
-      console.log('stderr: ', stderr)
-    } else {
-      console.log('stdout', stdout)
+  exec('sh ' + getShellScriptPath() + ' ' + version, function (err, stdout, stderr) {
+    if(err) {
+      process.stdout.write('Error trying to release project')
     }
   })
 }
@@ -67,11 +61,9 @@ AutomateRelease.prototype.apply = function(compiler) {
 
     package.version = version
 
-    console.log(package.version)
-
-    fs.writeFileSync(pkg, JSON.stringify(package, null, 2), function(err) {
+    fs.writeFileSync('package.json', JSON.stringify(package, null, 2), function(err) {
       if (err) {
-        console.log(err)
+        process.stdout.write('Package JSON not found')
       }
     })
 
