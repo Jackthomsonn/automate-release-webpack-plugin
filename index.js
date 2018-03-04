@@ -2,36 +2,36 @@ const fs = require('fs')
 const exec = require('child_process').exec
 const path = require('path')
 const package = require(path.resolve('./', 'package.json'))
+const semverTypes = ['major', 'minor', 'patch']
 
-const AutomateRelease = function() {
+const handleError = function (error) {
+  process.stdout.write('Automate Release Webpack Plugin Error: ', error)
 }
 
-const getShellScriptPath = function() {
+const AutomateRelease = function () {
+}
+
+const getVersionNumberToUpdate = function (index) {
+  return package.version.split('.')[index]
+}
+
+const getShellScriptPath = function () {
   return __dirname.replace(/ /g, '\\ ') + '/prepare-release.sh'
 }
 
-const handleMajor = function() {
-  let major = package.version.split('.')[0]
-  let version = package.version
-
-  return version.substr(0, 0) + (Number(major) + 1) + '.' + '0.0'
+const handleMajor = function () {
+  return package.version.substr(0, 0) + (Number(getVersionNumberToUpdate(0)) + 1) + '.' + '0.0'
 }
 
-const handleMinor = function() {
-  let minor = package.version.split('.')[1]
-  let version = package.version
-
-  return version.substr(0, 2) + (Number(minor) + 1) + '.' + version.substr(3 + 1)
+const handleMinor = function () {
+  return package.version.substr(0, 2) + (Number(getVersionNumberToUpdate(1)) + 1) + '.' + package.version.substr(3 + 1)
 }
 
-const handlePatch = function() {
-  let patch = package.version.split('.')[2]
-  let version = package.version
-
-  return version.substr(0, 4) + (Number(patch) + 1) + version.substr(5 + 1)
+const handlePatch = function () {
+  return package.version.substr(0, 4) + (Number(getVersionNumberToUpdate(2)) + 1) + package.version.substr(5 + 1)
 }
 
-const determineVersion = function(type) {
+const updateVersionNumber = function (type) {
   switch (type) {
     case 'major':
       return handleMajor()
@@ -45,29 +45,40 @@ const determineVersion = function(type) {
   }
 }
 
-const prepareRelease = function(version) {
-  exec('sh ' + getShellScriptPath() + ' ' + version, function (err, stdout, stderr) {
-    if(err) {
-      process.stdout.write('Error trying to release project')
+const prepareRelease = function () {
+  exec('sh ' + getShellScriptPath() + ' ' + package.version, function (err, stdout, stderr) {
+    if (!err) {
+      return
     }
+
+    handleError(err)
   })
 }
 
-AutomateRelease.prototype.apply = function(compiler) {
-  compiler.plugin('compile', function(params) {
-    const args = process.argv.pop()
-    const semverType = args
-    const version = determineVersion(semverType)
+const findType = function () {
+  return semverTypes.filter(function (element) {
+    return process.argv.includes(element)
+  })
+}
 
-    package.version = version
+const parsePackageJson = function () {
+  return JSON.stringify(package, null, 2)
+}
 
-    fs.writeFileSync('package.json', JSON.stringify(package, null, 2), function(err) {
-      if (err) {
-        process.stdout.write('Package JSON not found')
+AutomateRelease.prototype.apply = function (compiler) {
+  compiler.plugin('compile', function () {
+
+    package.version = updateVersionNumber(findType().toString())
+
+    fs.writeFileSync('package.json', parsePackageJson(), function (err) {
+      if (!err) {
+        return
       }
+
+      handleError(err)
     })
 
-    prepareRelease(version)
+    prepareRelease()
   })
 }
 
