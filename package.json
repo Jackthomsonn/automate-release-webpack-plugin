@@ -5,7 +5,7 @@
     "build": "yarn && tsc"
   },
   "description": "A webpack plugin which bumps your version number up and automates a release with Git, creating a tag and pushing up your commited code",
-  "main": "index.js",
+  "main": "build/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Jackthomsonn/automate-release-webpack-plugin.git"
