@@ -1,5 +1,4 @@
 import { exec } from 'child_process'
-import { AutomateRelease } from '.'
 import { ErrorHandler } from './error'
 
 class PrepareRelease {

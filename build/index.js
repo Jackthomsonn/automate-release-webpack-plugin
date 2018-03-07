@@ -3,39 +3,29 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs");
 const path = require("path");
 const prepare_release_1 = require("./prepare-release");
+const handle_major_1 = require("./handlers/handle-major");
+const handle_minor_1 = require("./handlers/handle-minor");
+const handle_patch_1 = require("./handlers/handle-patch");
 class AutomateRelease {
     constructor() {
         this.apply = (compiler) => {
             compiler.plugin('done', () => {
-                console.log(this.updateVersionNumber(this.findType().toString()));
                 this.pkg.version = this.updateVersionNumber(this.findType().toString());
                 fs.writeFileSync('package.json', this.parsePackageJson());
                 new prepare_release_1.PrepareRelease(this.pkg);
             });
         };
-        this.getVersionNumberToUpdate = (index) => {
-            return this.pkg.version.split('.')[index];
-        };
-        this.handleMajor = () => {
-            return this.pkg.version.substr(0, 0) + (Number(this.getVersionNumberToUpdate(0)) + 1) + '.' + '0.0';
-        };
-        this.handleMinor = () => {
-            return this.pkg.version.substr(0, 2) + (Number(this.getVersionNumberToUpdate(1)) + 1) + '.' + this.pkg.version.substr(3 + 1);
-        };
-        this.handlePatch = () => {
-            return this.pkg.version.substr(0, 4) + (Number(this.getVersionNumberToUpdate(2)) + 1) + this.pkg.version.substr(5 + 1);
-        };
         this.updateVersionNumber = (type) => {
             let semverType;
             switch (type) {
                 case 'major':
-                    semverType = this.handleMajor();
+                    semverType = new handle_major_1.HandleMajor(this.pkg);
                     break;
                 case 'minor':
-                    semverType = this.handleMinor();
+                    semverType = new handle_minor_1.HandleMinor(this.pkg);
                     break;
                 case 'patch':
-                    semverType = this.handlePatch();
+                    semverType = new handle_patch_1.HandlePatch(this.pkg);
                     break;
             }
             return semverType;
