@@ -16,19 +16,14 @@ class AutomateRelease {
             });
         };
         this.updateVersionNumber = (type) => {
-            let semverType;
             switch (type) {
                 case 'major':
-                    semverType = new handle_major_1.HandleMajor(this.pkg);
-                    break;
+                    return new handle_major_1.HandleMajor(this.pkg).handleVersion();
                 case 'minor':
-                    semverType = new handle_minor_1.HandleMinor(this.pkg);
-                    break;
+                    return new handle_minor_1.HandleMinor(this.pkg).handleVersion();
                 case 'patch':
-                    semverType = new handle_patch_1.HandlePatch(this.pkg);
-                    break;
+                    return new handle_patch_1.HandlePatch(this.pkg).handleVersion();
             }
-            return semverType;
         };
         this.findType = () => {
             return this.semverTypes.filter((element) => {

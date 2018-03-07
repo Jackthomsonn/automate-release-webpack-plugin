@@ -1,7 +1,7 @@
 /// <reference types="webpack" />
 import { Compiler } from 'webpack';
 declare class AutomateRelease {
-    private pkg;
+    protected pkg: any;
     private semverTypes;
     constructor();
     apply: (compiler: Compiler) => void;

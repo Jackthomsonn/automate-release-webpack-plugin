@@ -7,8 +7,5 @@ class VersionHandler {
         };
         this.pkg = pkg;
     }
-    handleVersion() {
-        return;
-    }
 }
 exports.VersionHandler = VersionHandler;

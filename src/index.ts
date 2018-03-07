@@ -8,7 +8,7 @@ import { HandleMinor } from './handlers/handle-minor'
 import { HandlePatch } from './handlers/handle-patch'
 
 class AutomateRelease {
-  private pkg: any
+  protected pkg: any
   private semverTypes: Array<string>
 
   constructor() {
@@ -26,22 +26,15 @@ class AutomateRelease {
     })
   }
 
-  private updateVersionNumber = (type: string) => {
-    let semverType
-
+  private updateVersionNumber = (type: string): any => {
     switch (type) {
       case 'major':
-        semverType = new HandleMajor(this.pkg)
-        break
+        return new HandleMajor(this.pkg).handleVersion()
       case 'minor':
-        semverType = new HandleMinor(this.pkg)
-        break
+        return new HandleMinor(this.pkg).handleVersion()
       case 'patch':
-        semverType = new HandlePatch(this.pkg)
-        break
+        return new HandlePatch(this.pkg).handleVersion()
     }
-
-    return semverType
   }
 
   private findType = () => {
