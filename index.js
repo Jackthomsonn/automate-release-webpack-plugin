@@ -4,8 +4,6 @@ const path = require('path')
 const package = require(path.resolve(__dirname, 'package.json'))
 const semverTypes = ['major', 'minor', 'patch']
 
-console.log(package)
-
 const handleError = function (error) {
   process.stdout.write('Automate Release Webpack Plugin Error: ', error)
 }
