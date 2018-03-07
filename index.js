@@ -1,8 +1,10 @@
 const fs = require('fs')
 const exec = require('child_process').exec
 const path = require('path')
-const package = require(path.resolve('./', 'package.json'))
+const package = require(path.resolve(__dirname, 'package.json'))
 const semverTypes = ['major', 'minor', 'patch']
+
+console.log(package)
 
 const handleError = function (error) {
   process.stdout.write('Automate Release Webpack Plugin Error: ', error)
@@ -66,17 +68,11 @@ const parsePackageJson = function () {
 }
 
 AutomateRelease.prototype.apply = function (compiler) {
-  compiler.plugin('compile', function () {
+  compiler.plugin('done', function () {
 
     package.version = updateVersionNumber(findType().toString())
 
-    fs.writeFileSync('package.json', parsePackageJson(), function (err) {
-      if (!err) {
-        return
-      }
-
-      handleError(err)
-    })
+    fs.writeFileSync('package.json', parsePackageJson())
 
     prepareRelease()
   })
