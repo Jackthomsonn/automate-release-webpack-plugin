@@ -7,13 +7,10 @@ A webpack plugin which bumps your version number up in your package.json file an
 ```javascript
 
 const { AutomateRelease } = require('automate-release-webpack-plugin')
+const path = require('path')
 
 module.exports = {
   entry: './app.js',
-  mode: 'development',
-  resolve: {
-    extensions: ['.js']
-  },
   output: {
     filename: 'app.js',
     path: path.resolve(__dirname, 'dist')
