@@ -3,18 +3,24 @@ import { ErrorHandler } from './error'
 
 class PrepareRelease {
   private pkg: any
+  private options: AutomateReleasePlugin.IOptions
 
-  constructor(pkg: any) {
+  constructor(pkg: any, options: AutomateReleasePlugin.IOptions) {
+    this.options = options
     this.pkg = pkg
     this.prepareRelease()
   }
 
-  private getShellScriptPath = () => {
+  private getShellScriptPath = (): string => {
     return __dirname.replace(/ /g, '\\ ') + '/prepare-release.sh'
   }
 
-  private prepareRelease = () => {
-    exec('sh ' + this.getShellScriptPath() + ' ' + this.pkg.version, (err: any) => {
+  private setVersion(): number {
+    return (this.options.releaseLabel ? this.pkg.version.replace(this.options.releaseLabel, '') : this.pkg.version)
+  }
+
+  private prepareRelease = (): void => {
+    exec('sh ' + this.getShellScriptPath() + ' ' + this.setVersion(), (err: any) => {
       if (!err) {
         return
       }

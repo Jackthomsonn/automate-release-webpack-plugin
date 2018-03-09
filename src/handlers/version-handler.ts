@@ -5,7 +5,7 @@ class VersionHandler {
     this.pkg = pkg
   }
 
-  protected getVersionNumberToUpdate = (index: number) => {
+  protected getVersionNumberToUpdate = (index: number): string => {
     return this.pkg.version.split('.')[index]
   }
 }

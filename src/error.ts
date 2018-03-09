@@ -1,9 +1,11 @@
+import chalk from 'chalk'
+
 class ErrorHandler {
   public static handle: any;
 
-  public static __initialize_static_members() {
+  public static __initialize_static_members(): void {
     ErrorHandler.handle = (error: Error) => {
-      process.stdout.write('Automate Release Webpack Plugin Error: ', error.message)
+      console.log(chalk.bold.magentaBright('Automate Release Webpack Plugin Error:'), chalk.italic.blue(error.message))
     };
   }
 }
