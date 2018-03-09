@@ -1,7 +1,9 @@
 declare class PrepareRelease {
     private pkg;
-    constructor(pkg: any);
+    private options;
+    constructor(pkg: any, options: AutomateReleasePlugin.IOptions);
     private getShellScriptPath;
+    private setVersion();
     private prepareRelease;
 }
 export { PrepareRelease };
