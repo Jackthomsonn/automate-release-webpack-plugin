@@ -24,15 +24,18 @@ class AutomateRelease {
   }
 
   public apply = (compiler: Compiler): void => {
-    compiler.plugin('done', () => {
+    compiler.plugin('emit', (compilation) => {
+      if (compilation.errors.length === 0) {
+        try {
+          this.checkReleaseLabelIsPresentInPackageJson()
+          this.checkLabelIsPresentInConfig()
 
-      try {
-        this.checkReleaseLabelIsPresentInPackageJson()
-        this.checkLabelIsPresentInConfig()
-
-        this.startAutomation()
-      } catch (err) {
-        ErrorHandler.handle(err)
+          this.startAutomation()
+        } catch (err) {
+          ErrorHandler.handle(err)
+        }
+      } else {
+        console.log(compilation.errors)
       }
     })
   }

@@ -10,14 +10,19 @@ const error_1 = require("./error");
 class AutomateRelease {
     constructor(options) {
         this.apply = (compiler) => {
-            compiler.plugin('done', () => {
-                try {
-                    this.checkReleaseLabelIsPresentInPackageJson();
-                    this.checkLabelIsPresentInConfig();
-                    this.startAutomation();
+            compiler.plugin('emit', (compilation) => {
+                if (compilation.errors.length === 0) {
+                    try {
+                        this.checkReleaseLabelIsPresentInPackageJson();
+                        this.checkLabelIsPresentInConfig();
+                        this.startAutomation();
+                    }
+                    catch (err) {
+                        error_1.ErrorHandler.handle(err);
+                    }
                 }
-                catch (err) {
-                    error_1.ErrorHandler.handle(err);
+                else {
+                    console.log(compilation.errors);
                 }
             });
         };
