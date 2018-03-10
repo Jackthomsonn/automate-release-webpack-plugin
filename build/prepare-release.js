@@ -20,7 +20,7 @@ class PrepareRelease {
         this.prepareRelease();
     }
     setVersion() {
-        return (this.options.releaseLabel ? this.pkg.version.replace(this.options.releaseLabel, '') : this.pkg.version);
+        return (this.options.preReleaseLabel ? this.pkg.version.replace(this.options.preReleaseLabel, '') : this.pkg.version);
     }
 }
 exports.PrepareRelease = PrepareRelease;

@@ -5,7 +5,10 @@ class ErrorHandler {
 
   public static __initialize_static_members(): void {
     ErrorHandler.handle = (error: Error) => {
-      console.log(chalk.bold.magentaBright('Automate Release Webpack Plugin Error:'), chalk.italic.blue(error.message))
+      // tslint:disable-next-line:no-console
+      console.log(
+        chalk.bold.magentaBright('Automate Release Webpack Plugin Error:'), chalk.italic.blue(error.message)
+      )
     };
   }
 }

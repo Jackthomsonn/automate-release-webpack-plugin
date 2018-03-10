@@ -1,6 +1,6 @@
 {
   "name": "automate-release-webpack-plugin",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "scripts": {
     "build": "yarn && tsc"
   },
@@ -20,9 +20,9 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^9.4.6",
-    "@types/webpack": "^4.0.0",
+    "@types/webpack": "^4.1.0",
+    "chalk": "^2.3.2",
     "tslint": "^5.9.1",
-    "tslint-circular-dependencies": "^0.1.0",
     "typescript": "^2.7.2",
     "webpack": "^4.1.1",
     "yarn": "^1.5.1"

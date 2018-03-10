@@ -1,12 +1,12 @@
 import * as fs from 'fs'
 import * as path from 'path'
 
-import { Compiler } from 'webpack'
-import { PrepareRelease } from './prepare-release'
+import { compilation } from 'webpack'
+import { ErrorHandler } from './error'
 import { HandleMajor } from './handlers/handle-major'
 import { HandleMinor } from './handlers/handle-minor'
 import { HandlePatch } from './handlers/handle-patch'
-import { ErrorHandler } from './error'
+import { PrepareRelease } from './prepare-release'
 
 class AutomateRelease {
   protected pkg: any
@@ -14,18 +14,18 @@ class AutomateRelease {
   private options: AutomateReleasePlugin.IOptions
 
   constructor(options: AutomateReleasePlugin.IOptions) {
-    this.options = Object.assign({ releaseLabel: undefined }, options)
+    this.options = this.populateDefaultOptionsConfig(options)
     this.pkg = require(path.resolve('./', 'package.json'))
     this.semverTypes = ['major', 'minor', 'patch']
 
-    if (this.options.releaseLabel && !this.options.releaseLabel.includes('-')) {
+    if (this.options.preReleaseLabel && !this.options.preReleaseLabel.includes('-')) {
       this.constructReleaseLabel()
     }
   }
 
-  public apply = (compiler: Compiler): void => {
-    compiler.plugin('emit', (compilation) => {
-      if (compilation.errors.length === 0) {
+  public apply = (compiler: any): void => {
+    compiler.plugin('emit', (comp: compilation.Compilation) => {
+      if (comp.errors.length === 0) {
         try {
           this.checkReleaseLabelIsPresentInPackageJson()
           this.checkLabelIsPresentInConfig()
@@ -35,20 +35,30 @@ class AutomateRelease {
           ErrorHandler.handle(err)
         }
       } else {
-        console.log(compilation.errors)
+        ErrorHandler.handle(comp.errors.toString())
       }
     })
   }
 
+  private populateDefaultOptionsConfig(options: AutomateReleasePlugin.IOptions): AutomateReleasePlugin.IOptions {
+    return { preReleaseLabel: undefined, ...options };
+  }
+
   private checkReleaseLabelIsPresentInPackageJson(): void {
-    if (this.options.releaseLabel && !this.pkg.version.includes(this.options.releaseLabel)) {
-      throw ({ message: `Release label is missing or does not match what you have specified in the config. Add '${this.options.releaseLabel}' to your package.json or remove the releaselabel from the config` })
+    if (this.options.preReleaseLabel && !this.pkg.version.includes(this.options.preReleaseLabel)) {
+      throw ({
+        // tslint:disable-next-line:max-line-length
+        message: `preReleaseLabel is missing or does not match what you have specified in the config. Add '${this.options.preReleaseLabel}' to your package.json or remove the preReleaseLabel from the config`
+      })
     }
   }
 
   private checkLabelIsPresentInConfig(): void {
-    if (!this.options.releaseLabel && this.pkg.version.includes('-')) {
-      throw ({ message: `Release label is present in your package json but not set in the config. Remove '${this.pkg.version.split('-').pop()}' or set releaseLabel in the options config to '${this.pkg.version.split('-').pop()}'` })
+    if (!this.options.preReleaseLabel && this.pkg.version.includes('-')) {
+      throw ({
+        // tslint:disable-next-line:max-line-length
+        message: `preReleaseLabel is present in your package json but not set in the config. Remove '${this.pkg.version.split('-').pop()}' or set the preReleaseLabel in the options config to '${this.pkg.version.split('-').pop()}'`
+      })
     }
   }
 
@@ -57,20 +67,20 @@ class AutomateRelease {
 
     this.pkg.version = this.updateVersionNumber(this.findType().toString())
 
-    if (this.options.releaseLabel) {
-      this.addReleaseLabel()
+    if (this.options.preReleaseLabel) {
+      this.addPreReleaseLabel()
     }
 
     fs.writeFileSync('package.json', this.parsePackageJson())
   }
 
   private constructReleaseLabel(): void {
-    this.options.releaseLabel = '-' + this.options.releaseLabel
+    this.options.preReleaseLabel = '-' + this.options.preReleaseLabel
   }
 
   private updateVersionNumber = (type: string) => {
-    if (this.options.releaseLabel) {
-      this.removeReleaseLabel()
+    if (this.options.preReleaseLabel) {
+      this.removePreReleaseLabel()
     }
 
     switch (type) {
@@ -85,7 +95,7 @@ class AutomateRelease {
 
   private findType = (): Array<string> => {
     return this.semverTypes.filter((element) => {
-      return (<any>process).argv.includes(element)
+      return (process as any).argv.includes(element)
     })
   }
 
@@ -93,12 +103,12 @@ class AutomateRelease {
     return JSON.stringify(this.pkg, null, 2)
   }
 
-  private removeReleaseLabel(): void {
-    this.pkg.version = this.pkg.version.replace(this.options.releaseLabel, '')
+  private removePreReleaseLabel(): void {
+    this.pkg.version = this.pkg.version.replace(this.options.preReleaseLabel, '')
   }
 
-  private addReleaseLabel(): void {
-    this.pkg.version = this.pkg.version + this.options.releaseLabel
+  private addPreReleaseLabel(): void {
+    this.pkg.version = this.pkg.version + this.options.preReleaseLabel
   }
 }
 

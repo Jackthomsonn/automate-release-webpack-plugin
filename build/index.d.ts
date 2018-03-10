@@ -1,11 +1,10 @@
-/// <reference types="webpack" />
-import { Compiler } from 'webpack';
 declare class AutomateRelease {
     protected pkg: any;
     private semverTypes;
     private options;
     constructor(options: AutomateReleasePlugin.IOptions);
-    apply: (compiler: Compiler) => void;
+    apply: (compiler: any) => void;
+    private populateDefaultOptionsConfig(options);
     private checkReleaseLabelIsPresentInPackageJson();
     private checkLabelIsPresentInConfig();
     private startAutomation();
@@ -13,7 +12,7 @@ declare class AutomateRelease {
     private updateVersionNumber;
     private findType;
     private parsePackageJson;
-    private removeReleaseLabel();
-    private addReleaseLabel();
+    private removePreReleaseLabel();
+    private addPreReleaseLabel();
 }
 export { AutomateRelease };

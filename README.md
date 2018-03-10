@@ -16,7 +16,7 @@ module.exports = {
     path: path.resolve(__dirname, 'dist')
   },
   plugins: [
-    new AutomateRelease( { releaseLabel: 'snapshot' } ) // Optional config 'releaseLabel' Example: 1.1.0-snapshot
+    new AutomateRelease( { preReleaseLabel: 'snapshot' } ) // Optional config 'preReleaseLabel' Example: 1.1.0-snapshot
   ]
 };
 

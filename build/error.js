@@ -4,6 +4,7 @@ const chalk_1 = require("chalk");
 class ErrorHandler {
     static __initialize_static_members() {
         ErrorHandler.handle = (error) => {
+            // tslint:disable-next-line:no-console
             console.log(chalk_1.default.bold.magentaBright('Automate Release Webpack Plugin Error:'), chalk_1.default.italic.blue(error.message));
         };
     }

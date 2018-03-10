@@ -16,7 +16,7 @@ class PrepareRelease {
   }
 
   private setVersion(): number {
-    return (this.options.releaseLabel ? this.pkg.version.replace(this.options.releaseLabel, '') : this.pkg.version)
+    return (this.options.preReleaseLabel ? this.pkg.version.replace(this.options.preReleaseLabel, '') : this.pkg.version)
   }
 
   private prepareRelease = (): void => {
