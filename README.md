@@ -26,6 +26,7 @@ module.exports = {
 
 ##### On the command line, provide a --env flag and give a value of either, major, minor or patch
 
+
 ```
 webpack --config webpack.config.js --env patch
 ```
