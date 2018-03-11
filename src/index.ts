@@ -35,7 +35,8 @@ class AutomateRelease {
           ErrorHandler.handle(err)
         }
       } else {
-        ErrorHandler.handle(comp.errors.toString())
+        // tslint:disable-next-line:no-console
+        console.log(comp.errors.toString())
       }
     })
   }
