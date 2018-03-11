@@ -22,7 +22,8 @@ class AutomateRelease {
                     }
                 }
                 else {
-                    error_1.ErrorHandler.handle(comp.errors.toString());
+                    // tslint:disable-next-line:no-console
+                    console.log(comp.errors.toString());
                 }
             });
         };
