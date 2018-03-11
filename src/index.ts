@@ -64,15 +64,27 @@ class AutomateRelease {
   }
 
   private startAutomation(): void {
-    new PrepareRelease(this.pkg, this.options)
-
-    this.pkg.version = this.updateVersionNumber(this.findType().toString())
-
     if (this.options.preReleaseLabel) {
-      this.addPreReleaseLabel()
-    }
+      new PrepareRelease(this.pkg, this.options)
 
-    fs.writeFileSync('package.json', this.parsePackageJson())
+      this.pkg.version = this.updateVersionNumber(this.findType().toString())
+
+      if (this.options.preReleaseLabel) {
+        this.addPreReleaseLabel()
+      }
+
+      fs.writeFileSync('package.json', this.parsePackageJson())
+    } else {
+      this.pkg.version = this.updateVersionNumber(this.findType().toString())
+
+      if (this.options.preReleaseLabel) {
+        this.addPreReleaseLabel()
+      }
+
+      new PrepareRelease(this.pkg, this.options)
+
+      fs.writeFileSync('package.json', this.parsePackageJson())
+    }
   }
 
   private constructReleaseLabel(): void {

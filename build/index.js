@@ -75,12 +75,22 @@ class AutomateRelease {
         }
     }
     startAutomation() {
-        new prepare_release_1.PrepareRelease(this.pkg, this.options);
-        this.pkg.version = this.updateVersionNumber(this.findType().toString());
         if (this.options.preReleaseLabel) {
-            this.addPreReleaseLabel();
+            new prepare_release_1.PrepareRelease(this.pkg, this.options);
+            this.pkg.version = this.updateVersionNumber(this.findType().toString());
+            if (this.options.preReleaseLabel) {
+                this.addPreReleaseLabel();
+            }
+            fs.writeFileSync('package.json', this.parsePackageJson());
         }
-        fs.writeFileSync('package.json', this.parsePackageJson());
+        else {
+            this.pkg.version = this.updateVersionNumber(this.findType().toString());
+            if (this.options.preReleaseLabel) {
+                this.addPreReleaseLabel();
+            }
+            new prepare_release_1.PrepareRelease(this.pkg, this.options);
+            fs.writeFileSync('package.json', this.parsePackageJson());
+        }
     }
     constructReleaseLabel() {
         this.options.preReleaseLabel = '-' + this.options.preReleaseLabel;
