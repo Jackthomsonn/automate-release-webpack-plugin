@@ -1,5 +1,5 @@
 declare class AutomateRelease {
-    protected pkg: any;
+    private pkg;
     private semverTypes;
     private options;
     constructor(options: AutomateReleasePlugin.IOptions);

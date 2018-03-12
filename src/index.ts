@@ -10,7 +10,7 @@ import { HandlePatch } from './handlers/handle-patch'
 import { PrepareRelease } from './prepare-release'
 
 class AutomateRelease {
-  protected pkg: any
+  private pkg: any
   private semverTypes: Array<string>
   private options: AutomateReleasePlugin.IOptions
 
