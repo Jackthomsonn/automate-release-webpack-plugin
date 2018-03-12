@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs");
 const path = require("path");
+const chalk_1 = require("chalk");
 const error_1 = require("./error");
 const handle_major_1 = require("./handlers/handle-major");
 const handle_minor_1 = require("./handlers/handle-minor");
@@ -74,22 +75,32 @@ class AutomateRelease {
             });
         }
     }
+    handleLabeledRelease() {
+        this.pkg.version = this.pkg.version.replace(this.options.preReleaseLabel, '');
+        const cacheVersion = this.pkg.version;
+        fs.writeFileSync('package.json', this.parsePackageJson());
+        new prepare_release_1.PrepareRelease(this.pkg, this.options, () => {
+            this.pkg.version = this.updateVersionNumber(this.findType().toString());
+            this.addPreReleaseLabel();
+            fs.writeFileSync('package.json', this.parsePackageJson());
+            // tslint:disable-next-line:no-console
+            console.log(chalk_1.default.bold.magentaBright('Automate Release Webpack Plugin:'), chalk_1.default.italic.blue(`Successfully released version ${cacheVersion}`));
+        });
+    }
+    handleNonLabledRelease() {
+        this.pkg.version = this.updateVersionNumber(this.findType().toString());
+        fs.writeFileSync('package.json', this.parsePackageJson());
+        new prepare_release_1.PrepareRelease(this.pkg, this.options, () => {
+            // tslint:disable-next-line:no-console
+            console.log(chalk_1.default.bold.magentaBright('Automate Release Webpack Plugin:'), chalk_1.default.italic.blue(`Successfully released version ${this.pkg.version}`));
+        });
+    }
     startAutomation() {
         if (this.options.preReleaseLabel) {
-            new prepare_release_1.PrepareRelease(this.pkg, this.options);
-            this.pkg.version = this.updateVersionNumber(this.findType().toString());
-            if (this.options.preReleaseLabel) {
-                this.addPreReleaseLabel();
-            }
-            fs.writeFileSync('package.json', this.parsePackageJson());
+            this.handleLabeledRelease();
         }
         else {
-            this.pkg.version = this.updateVersionNumber(this.findType().toString());
-            if (this.options.preReleaseLabel) {
-                this.addPreReleaseLabel();
-            }
-            new prepare_release_1.PrepareRelease(this.pkg, this.options);
-            fs.writeFileSync('package.json', this.parsePackageJson());
+            this.handleNonLabledRelease();
         }
     }
     constructReleaseLabel() {

@@ -1,6 +1,7 @@
 import * as fs from 'fs'
 import * as path from 'path'
 
+import chalk from 'chalk';
 import { compilation } from 'webpack'
 import { ErrorHandler } from './error'
 import { HandleMajor } from './handlers/handle-major'
@@ -63,27 +64,51 @@ class AutomateRelease {
     }
   }
 
+  private handleLabeledRelease() {
+    this.pkg.version = this.pkg.version.replace(this.options.preReleaseLabel, '')
+
+    const cacheVersion = this.pkg.version
+
+    fs.writeFileSync('package.json', this.parsePackageJson())
+
+    new PrepareRelease(this.pkg, this.options, () => {
+      this.pkg.version = this.updateVersionNumber(this.findType().toString())
+
+      this.addPreReleaseLabel()
+
+      fs.writeFileSync('package.json', this.parsePackageJson())
+
+      // tslint:disable-next-line:no-console
+      console.log(
+        chalk.bold.magentaBright(
+          'Automate Release Webpack Plugin:'), chalk.italic.blue(
+            `Successfully released version ${cacheVersion}`
+          )
+      )
+    });
+  }
+
+  private handleNonLabledRelease() {
+    this.pkg.version = this.updateVersionNumber(this.findType().toString())
+
+    fs.writeFileSync('package.json', this.parsePackageJson())
+
+    new PrepareRelease(this.pkg, this.options, () => {
+      // tslint:disable-next-line:no-console
+      console.log(
+        chalk.bold.magentaBright(
+          'Automate Release Webpack Plugin:'), chalk.italic.blue(
+            `Successfully released version ${this.pkg.version}`
+          )
+      )
+    })
+  }
+
   private startAutomation(): void {
     if (this.options.preReleaseLabel) {
-      new PrepareRelease(this.pkg, this.options)
-
-      this.pkg.version = this.updateVersionNumber(this.findType().toString())
-
-      if (this.options.preReleaseLabel) {
-        this.addPreReleaseLabel()
-      }
-
-      fs.writeFileSync('package.json', this.parsePackageJson())
+      this.handleLabeledRelease()
     } else {
-      this.pkg.version = this.updateVersionNumber(this.findType().toString())
-
-      if (this.options.preReleaseLabel) {
-        this.addPreReleaseLabel()
-      }
-
-      new PrepareRelease(this.pkg, this.options)
-
-      fs.writeFileSync('package.json', this.parsePackageJson())
+      this.handleNonLabledRelease()
     }
   }
 

@@ -7,6 +7,8 @@ declare class AutomateRelease {
     private populateDefaultOptionsConfig(options);
     private checkReleaseLabelIsPresentInPackageJson();
     private checkLabelIsPresentInConfig();
+    private handleLabeledRelease();
+    private handleNonLabledRelease();
     private startAutomation();
     private constructReleaseLabel();
     private updateVersionNumber;
