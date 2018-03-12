@@ -23,7 +23,7 @@ class AutomateRelease {
                 }
                 else {
                     // tslint:disable-next-line:no-console
-                    console.log(comp.errors.toString());
+                    comp.errors.forEach(error => console.log(error.message));
                 }
             });
         };
