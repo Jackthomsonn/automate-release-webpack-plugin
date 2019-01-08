@@ -4,6 +4,7 @@ declare class AutomateRelease {
     private options;
     constructor(options: AutomateReleasePlugin.IOptions);
     apply: (compiler: any) => void;
+    private startFileChecks;
     private populateDefaultOptionsConfig(options);
     private checkReleaseLabelIsPresentInPackageJson();
     private checkLabelIsPresentInConfig();
@@ -13,6 +14,7 @@ declare class AutomateRelease {
     private constructReleaseLabel();
     private updateVersionNumber;
     private findType;
+    private shouldSkipBuild;
     private parsePackageJson;
     private removePreReleaseLabel();
     private addPreReleaseLabel();

@@ -25,21 +25,32 @@ class AutomateRelease {
   }
 
   public apply = (compiler: any): void => {
-    compiler.plugin('emit', (comp: compilation.Compilation) => {
-      if (comp.errors.length === 0) {
-        try {
-          this.checkReleaseLabelIsPresentInPackageJson()
-          this.checkLabelIsPresentInConfig()
-
-          this.startAutomation()
-        } catch (err) {
-          ErrorHandler.handle(err)
+    if (this.shouldSkipBuild()) {
+      compiler.plugin('beforeCompile', () => {
+        this.startFileChecks();
+        process.exit()
+      })
+    } else {
+      compiler.plugin('emit', (comp: compilation.Compilation) => {
+        if (comp.errors.length === 0) {
+          this.startFileChecks();
+        } else {
+          // tslint:disable-next-line:no-console
+          comp.errors.forEach(error => console.log(error.message))
         }
-      } else {
-        // tslint:disable-next-line:no-console
-        comp.errors.forEach(error => console.log(error.message))
-      }
-    })
+      })
+    }
+  }
+
+  private startFileChecks = () => {
+    try {
+      this.checkReleaseLabelIsPresentInPackageJson()
+      this.checkLabelIsPresentInConfig()
+
+      this.startAutomation()
+    } catch (err) {
+      ErrorHandler.handle(err)
+    }
   }
 
   private populateDefaultOptionsConfig(options: AutomateReleasePlugin.IOptions): AutomateReleasePlugin.IOptions {
@@ -135,6 +146,10 @@ class AutomateRelease {
     return this.semverTypes.filter((element) => {
       return (process as any).argv.includes(element)
     })
+  }
+
+  private shouldSkipBuild = (): boolean => {
+    return (process as any).argv.includes('--skip-build')
   }
 
   private parsePackageJson = (): string => {

@@ -11,22 +11,33 @@ const prepare_release_1 = require("./prepare-release");
 class AutomateRelease {
     constructor(options) {
         this.apply = (compiler) => {
-            compiler.plugin('emit', (comp) => {
-                if (comp.errors.length === 0) {
-                    try {
-                        this.checkReleaseLabelIsPresentInPackageJson();
-                        this.checkLabelIsPresentInConfig();
-                        this.startAutomation();
+            if (this.shouldSkipBuild()) {
+                compiler.plugin('beforeCompile', () => {
+                    this.startFileChecks();
+                    process.exit();
+                });
+            }
+            else {
+                compiler.plugin('emit', (comp) => {
+                    if (comp.errors.length === 0) {
+                        this.startFileChecks();
                     }
-                    catch (err) {
-                        error_1.ErrorHandler.handle(err);
+                    else {
+                        // tslint:disable-next-line:no-console
+                        comp.errors.forEach(error => console.log(error.message));
                     }
-                }
-                else {
-                    // tslint:disable-next-line:no-console
-                    comp.errors.forEach(error => console.log(error.message));
-                }
-            });
+                });
+            }
+        };
+        this.startFileChecks = () => {
+            try {
+                this.checkReleaseLabelIsPresentInPackageJson();
+                this.checkLabelIsPresentInConfig();
+                this.startAutomation();
+            }
+            catch (err) {
+                error_1.ErrorHandler.handle(err);
+            }
         };
         this.updateVersionNumber = (type) => {
             if (this.options.preReleaseLabel) {
@@ -45,6 +56,9 @@ class AutomateRelease {
             return this.semverTypes.filter((element) => {
                 return process.argv.includes(element);
             });
+        };
+        this.shouldSkipBuild = () => {
+            return process.argv.includes('--skip-build');
         };
         this.parsePackageJson = () => {
             return JSON.stringify(this.pkg, null, 2);
